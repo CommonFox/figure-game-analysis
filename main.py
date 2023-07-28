@@ -17,6 +17,14 @@ def convert_time_values_to_seconds(time):
 
     return seconds
 
+def convert_seconds_to_minutes_seconds(seconds):
+    minutes = seconds // 60
+    seconds %= 60
+
+    display_string = str(minutes) + " min " + str(seconds) + " sec"
+
+    return display_string
+
 
 def main():
     df_fox_stats, df_brittany_stats = read_csv('csv/fox_stats.csv', 'csv/brittany_stats.csv')
