@@ -28,7 +28,7 @@ def convert_seconds_to_minutes_seconds(seconds):
     minutes = seconds // 60
     seconds %= 60
 
-    display_string = str(minutes) + " min " + str(seconds) + " sec"
+    display_string = str(round(minutes)) + " min " + str(round(seconds)) + " sec"
 
     return display_string
 
@@ -38,8 +38,9 @@ def main():
     df_fox_stats['Time'] = df_fox_stats['Time'].apply(convert_time_values_to_seconds)
     df_brittany_stats['Time'] = df_brittany_stats['Time'].apply(convert_time_values_to_seconds)
 
-    print(df_brittany_stats.mean())
-    print(df_fox_stats.mean())
+    combined_stats = pd.merge(df_fox_stats, df_brittany_stats, on='Game #', suffixes=('_fox', '_brittany'))
+
+    print(combined_stats.head())
 
     return 0
 
