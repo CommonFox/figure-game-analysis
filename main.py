@@ -4,7 +4,13 @@ def read_csv(fox_stats, brittany_stats):
     df_fox_stats = pd.read_csv(fox_stats)
     df_brittany_stats = pd.read_csv(brittany_stats)
 
-    return df_fox_stats, df_brittany_stats
+    df_fox_stats['Time'] = df_fox_stats['Time'].apply(convert_time_values_to_seconds)
+    df_brittany_stats['Time'] = df_brittany_stats['Time'].apply(convert_time_values_to_seconds)
+
+    merged_df = pd.merge(df_fox_stats, df_brittany_stats, on=['Game #', 'Date'], suffixes=('_fox', '_brittany'))
+    merged_df = merged_df.drop(['Player_fox', 'Player_brittany'], axis=1)
+
+    return merged_df
 
 def convert_time_values_to_seconds(time):
     if pd.isna(time):
@@ -33,14 +39,9 @@ def convert_seconds_to_minutes_seconds(seconds):
     return display_string
 
 def main():
-    df_fox_stats, df_brittany_stats = read_csv('csv/fox_stats.csv', 'csv/brittany_stats.csv')
+    df = read_csv('csv/fox_stats.csv', 'csv/brittany_stats.csv')
 
-    df_fox_stats['Time'] = df_fox_stats['Time'].apply(convert_time_values_to_seconds)
-    df_brittany_stats['Time'] = df_brittany_stats['Time'].apply(convert_time_values_to_seconds)
-
-    combined_stats = pd.merge(df_fox_stats, df_brittany_stats, on='Game #', suffixes=('_fox', '_brittany'))
-
-    print(combined_stats.head())
+    print(df.head(50))
 
     return 0
 
