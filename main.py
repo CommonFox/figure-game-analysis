@@ -102,13 +102,28 @@ def convert_seconds_to_minutes_seconds(seconds):
 
     return display_string
 
+def find_averages(df):
+    averages = {}
+
+    averages['fox_tries'] = df['tries_fox'].mean()
+    averages['fox_time'] = convert_seconds_to_minutes_seconds(df['time_fox'].mean())
+    averages['fox_hints'] = df['hints_fox'].mean()
+
+    averages['brittany_tries'] = df['tries_brittany'].mean()
+    averages['brittany_time'] = convert_seconds_to_minutes_seconds(df['time_brittany'].mean())
+    averages['brittany_hints'] = df['hints_brittany'].mean()
+
+    return averages
+
 def main():
     df = read_csv('csv/combined_stats.csv')
 
     scores = tally_scores(df)
     games_played = number_of_games_played(df)
+    averages = find_averages(df)
     print(scores)
     print(games_played)
+    print(averages)
 
     return 0
 
