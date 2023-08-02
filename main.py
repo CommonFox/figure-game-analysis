@@ -73,6 +73,15 @@ def convert_time_values_to_seconds(time):
 
     return seconds
 
+def tally_scores(merged_df):
+    fox_wins = merged_df[merged_df['Tries_Comparison'] < 0]
+    brittany_wins = merged_df[merged_df['Tries_Comparison'] > 0]
+
+    print(len(fox_wins))
+    print(len(brittany_wins))
+
+    return 0
+
 def convert_seconds_to_minutes_seconds(seconds):
     minutes = seconds // 60
     seconds %= 60
@@ -84,7 +93,7 @@ def convert_seconds_to_minutes_seconds(seconds):
 def main():
     df = read_csv('csv/fox_stats.csv', 'csv/brittany_stats.csv')
 
-    print(df.head(50))
+    tally_scores(df)
 
     return 0
 
