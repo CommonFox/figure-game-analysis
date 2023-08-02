@@ -1,15 +1,11 @@
 import pandas as pd
 import numpy as np
 
-def read_csv(fox_stats, brittany_stats):
-    df_fox_stats = pd.read_csv(fox_stats)
-    df_brittany_stats = pd.read_csv(brittany_stats)
+def read_csv(stats_csv):
+    df = pd.read_csv(stats_csv)
 
-    df_fox_stats['Time'] = df_fox_stats['Time'].apply(convert_time_values_to_seconds)
-    df_brittany_stats['Time'] = df_brittany_stats['Time'].apply(convert_time_values_to_seconds)
-
-    merged_df = pd.merge(df_fox_stats, df_brittany_stats, on=['Game #', 'Date'], suffixes=('_fox', '_brittany'))
-    merged_df = merged_df.drop(['Player_fox', 'Player_brittany'], axis=1)
+    df['time_fox'] = df['time_fox'].apply(convert_seconds_to_minutes_seconds)
+    df['time_brittany'] = df['time_brittany'].apply(convert_seconds_to_minutes_seconds)
 
     merged_df = tries_and_time_comparison(merged_df)
 
@@ -18,40 +14,40 @@ def read_csv(fox_stats, brittany_stats):
 def tries_and_time_comparison(merged_df):
     df_copy = merged_df.copy()
 
-    df_copy['Tries_Comparison'] = np.nan
-    df_copy['Time_Comparison'] = np.nan
+    df_copy['tries_difference'] = np.nan
+    df_copy['time_difference'] = np.nan
 
     # Calculate the Tries_Comparison column based on different conditions
-    df_copy['Tries_Comparison'] = np.where(
-        (df_copy['Tries_fox'].notna()) & (df_copy['Tries_brittany'].notna()),   # Both not NaN
-        df_copy['Tries_fox'] - df_copy['Tries_brittany'],
+    df_copy['tries_difference'] = np.where(
+        (df_copy['tries_fox'].notna()) & (df_copy['tries_brittany'].notna()),   # Both not NaN
+        df_copy['tries_fox'] - df_copy['tries_brittany'],
         np.nan  # Both are NaN
     )
 
     # Calculate the Time_Comparison column based on different conditions
-    df_copy['Time_Comparison'] = np.where(
-        (df_copy['Time_fox'].notna()) & (df_copy['Time_brittany'].notna()),   # Both not NaN
-        df_copy['Time_fox'] - df_copy['Time_brittany'],
+    df_copy['time_difference'] = np.where(
+        (df_copy['time_fox'].notna()) & (df_copy['time_brittany'].notna()),   # Both not NaN
+        df_copy['time_fox'] - df_copy['time_brittany'],
         np.nan  # Both are NaN
     )
 
     # Brittany plays but not Fox
-    mask = (df_copy['Tries_fox'].isna()) & (df_copy['Tries_brittany'].notna())
-    df_copy.loc[mask, 'Tries_Comparison'] = df_copy['Tries_brittany']
+    mask = (df_copy['tries_fox'].isna()) & (df_copy['tries_brittany'].notna())
+    df_copy.loc[mask, 'tries_difference'] = df_copy['tries_brittany']
 
-    mask = (df_copy['Time_fox'].isna()) & (df_copy['Time_brittany'].notna())
-    df_copy.loc[mask, 'Time_Comparison'] = df_copy['Time_brittany']
+    mask = (df_copy['time_fox'].isna()) & (df_copy['time_brittany'].notna())
+    df_copy.loc[mask, 'time_difference'] = df_copy['time_brittany']
 
     # Fox plays but not Brittany
-    mask = (df_copy['Tries_fox'].notna()) & (df_copy['Tries_brittany'].isna())
-    df_copy.loc[mask, 'Tries_Comparison'] = df_copy['Tries_fox'] * -1
+    mask = (df_copy['tries_fox'].notna()) & (df_copy['tries_brittany'].isna())
+    df_copy.loc[mask, 'tries_difference'] = df_copy['tries_fox'] * -1
 
-    mask = (df_copy['Time_fox'].notna()) & (df_copy['Time_brittany'].isna())
-    df_copy.loc[mask, 'Time_Comparison'] = df_copy['Time_fox'] * -1
+    mask = (df_copy['time_fox'].notna()) & (df_copy['time_brittany'].isna())
+    df_copy.loc[mask, 'time_difference'] = df_copy['time_fox'] * -1
 
-    df_copy = df_copy[['Game #', 'Tries_Comparison', 'Time_Comparison']]
+    df_copy = df_copy[['game_number', 'tries_difference', 'time_difference']]
 
-    merged_df = pd.merge(merged_df, df_copy, on='Game #')
+    merged_df = pd.merge(merged_df, df_copy, on='game_number')
 
     return merged_df
 
@@ -74,8 +70,8 @@ def convert_time_values_to_seconds(time):
     return seconds
 
 def tally_scores(merged_df):
-    fox_wins = merged_df[merged_df['Tries_Comparison'] < 0]
-    brittany_wins = merged_df[merged_df['Tries_Comparison'] > 0]
+    fox_wins = merged_df[merged_df['tries_difference'] < 0]
+    brittany_wins = merged_df[merged_df['tries_difference'] > 0]
 
     print(len(fox_wins))
     print(len(brittany_wins))
