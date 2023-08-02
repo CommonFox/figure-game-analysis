@@ -86,6 +86,14 @@ def tally_scores(df):
 
     return scores
 
+def number_of_games_played(df):
+    games_played = {}
+
+    games_played['fox'] = len(df[df['tries_fox'].notna()])
+    games_played['brittany'] = len(df[df['tries_brittany'].notna()])
+
+    return games_played
+
 def convert_seconds_to_minutes_seconds(seconds):
     minutes = seconds // 60
     seconds %= 60
@@ -98,7 +106,9 @@ def main():
     df = read_csv('csv/combined_stats.csv')
 
     scores = tally_scores(df)
+    games_played = number_of_games_played(df)
     print(scores)
+    print(games_played)
 
     return 0
 
