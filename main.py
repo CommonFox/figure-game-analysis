@@ -17,6 +17,9 @@ def tries_and_time_comparison(merged_df):
     df_copy['tries_difference'] = np.nan
     df_copy['time_difference'] = np.nan
 
+    df_copy['tries_fox'] = df_copy['tries_fox'] + df_copy['hints_fox']
+    df_copy['tries_brittany'] = df_copy['tries_brittany'] + df_copy['hints_brittany']
+
     # Calculate the Tries_Comparison column based on different conditions
     df_copy['tries_difference'] = np.where(
         (df_copy['tries_fox'].notna()) & (df_copy['tries_brittany'].notna()),   # Both not NaN
