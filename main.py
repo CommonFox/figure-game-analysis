@@ -2,14 +2,14 @@ import pandas as pd
 import numpy as np
 
 def read_csv(stats_csv):
-    df = pd.read_csv(stats_csv)
+    df = pd.read_csv(stats_csv)\
 
-    df['time_fox'] = df['time_fox'].apply(convert_seconds_to_minutes_seconds)
-    df['time_brittany'] = df['time_brittany'].apply(convert_seconds_to_minutes_seconds)
+    df['time_fox'] = df['time_fox'].apply(convert_time_values_to_seconds)
+    df['time_brittany'] = df['time_brittany'].apply(convert_time_values_to_seconds)
 
-    merged_df = tries_and_time_comparison(merged_df)
+    df = tries_and_time_comparison(df)
 
-    return merged_df
+    return df
 
 def tries_and_time_comparison(merged_df):
     df_copy = merged_df.copy()
@@ -53,7 +53,7 @@ def tries_and_time_comparison(merged_df):
 
 def convert_time_values_to_seconds(time):
     if pd.isna(time):
-        return None
+        return np.nan
 
     minutes_seconds = str(time)
     minutes_seconds = minutes_seconds.split(':')
@@ -87,7 +87,7 @@ def convert_seconds_to_minutes_seconds(seconds):
     return display_string
 
 def main():
-    df = read_csv('csv/fox_stats.csv', 'csv/brittany_stats.csv')
+    df = read_csv('csv/combined_stats.csv')
 
     tally_scores(df)
 
